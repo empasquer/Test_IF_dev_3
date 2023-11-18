@@ -1,0 +1,33 @@
+/* styles.css */
+.root {
+    -fx-background-color: black;
+    -fx-text-fill: lime; /* Set text color */
+}
+
+#welcomeLabel {
+    -fx-effect: innershadow(gaussian, #1a1a1a, 5, 0, 0, 0);
+    -fx-text-fill: lime;
+}
+
+#clickMeButton {
+    -fx-background-color: #4CAF50; /* Green button background color */
+    -fx-text-fill: lime;
+    -fx-font-weight: bold; /* Bold button text */
+    -fx-padding: 10 20; /* Add padding to the button */
+}
+
+#clickMeButton:pressed {
+    -fx-background-color: #45a049; /* Darker green when button is pressed */
+}
+
+#yesButton, #noButton {
+    -fx-background-color: #4CAF50; /* Green button background color */
+    -fx-text-fill: lime;
+    -fx-font-weight: bold; /* Bold button text */
+    -fx-padding: 10 20; /* Add padding to the button */
+    -fx-opacity: 0; /* Initially set opacity to 0 to hide the buttons */
+}
+
+#yesButton.show, #noButton.show {
+    -fx-opacity: 1; /* Make the buttons visible when 'show' class is present */
+}

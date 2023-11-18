@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- main.fxml -->
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+<?import javafx.fxml.FXML?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.emmapasquer.controller.MainController">
+    <Label fx:id="welcomeLabel" text="Welcome to Horror Game IF Test hehe">
+        <font>
+            <Font size="20"/>
+        </font>
+    </Label>
+
+    <!-- Buttons will be dynamically added here -->
+
+    <stylesheets>
+        <URL value="@/styles.css"/>
+    </stylesheets>
+</VBox>
