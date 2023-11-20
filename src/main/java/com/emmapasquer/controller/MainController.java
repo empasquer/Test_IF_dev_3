@@ -20,19 +20,22 @@ public class MainController implements Initializable {
 
     private MediaPlayer mediaPlayer;
 
-    private int sceneCounter = 0; // To track the current scene
+    private int sceneCounter = 0;
 
-    private final String[] scenes = {
-            "You chose to explore the dark corridor...",
-            "You encounter a mysterious figure...\nThe figure beckons you to follow. Will you go? Yes/No",
-            "Thanks for playing! Bye for now"
-    };
-
-    private final String[][] sceneButtons = {
-            {"Click on me! Don't worry.."},
-            {"Click on me! Don't worry.."},
-            {"Yes", "No"},
-            {"Click on me! Don't worry.."}
+    private final Choice[] choices = {
+            new Choice("You find yourself standing at the entrance of a cave! Ahead of you is a dark corridor...", "Click on me! Don't worry.."),  // 0
+            new Choice("You now stand in pitch darkness. Do you want to explore more if the corridor?", "Yes", "No"),  // 1
+            new Choice("You encounter a mysterious figure...\nThe figure beckons you to follow. Will you go?", "Yes", "No"),  // 2
+            new Choice("You follow the figure into a room with two doors. One door is marked 'Danger,' and the other is marked 'Safety.'\nWhich door will you choose?", "Danger", "Safety"),  // 3
+            new Choice("You take the dangerous path and encounter a monster...", "Click on me! Don't worry.."),  // 4
+            new Choice("You decide it's too risky and go back...", "Click on me! Don't worry.."),  // 5
+            new Choice("You choose the safer path and find a hidden treasure...", "Click on me! Don't worry.."),  // 6
+            new Choice("You feel uncertain and return to the starting point...", "Click on me! Don't worry.."),  // 7
+            new Choice("You decide not to follow the figure and explore another path...", "Explore another path", "Stay in place"),  // 8
+            new Choice("You find a hidden passage leading to a secret room...", "Click on me! Don't worry.."),  // 9
+            new Choice("You enter the secret room and discover a valuable artifact...", "Click on me! Don't worry.."),  // 10
+            new Choice("You choose to stay in place and the mysterious figure disappears...", "Click on me! Don't worry.."),  // 11
+            new Choice("Thanks for playing! Bye for now", "Click on me! Don't worry..")  // 12
     };
 
     @FXML
@@ -40,55 +43,102 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Initialize your UI components and logic here
-        welcomeLabel.setText("Welcome to Horror Game IF test hehe");
-        // Initialize media with a scene transition sound
+        welcomeLabel.setText(choices[sceneCounter].getText());
         String soundPath = new File("src/main/resources/scene_transition.mp3").toURI().toString();
         Media media = new Media(soundPath);
         mediaPlayer = new MediaPlayer(media);
-        // Set up initial buttons
         updateButtons();
     }
 
     private void updateButtons() {
-        int numButtons = sceneButtons[sceneCounter].length;
+        String[] options = choices[sceneCounter].getOptions();
+        int numButtons = options.length;
         buttons = new Button[numButtons];
         for (int i = 0; i < numButtons; i++) {
-            buttons[i] = new Button(sceneButtons[sceneCounter][i]);
+            buttons[i] = new Button(options[i]);
             buttons[i].setOnAction(this::handleButtonClick);
         }
 
-        // Clear previous buttons and add new ones to the UI
         VBox vbox = (VBox) welcomeLabel.getParent();
-        vbox.getChildren().removeIf(node -> node instanceof Button);
+        vbox.getChildren().clear();
+        vbox.getChildren().add(welcomeLabel);
         vbox.getChildren().addAll(buttons);
     }
 
-    @FXML
-    public void handleButtonClick(ActionEvent actionEvent) {
-        if (sceneCounter == 2) {
-            // Handle scene 3 with Yes/No options
-            if (actionEvent.getSource() == buttons[0]) {
-                welcomeLabel.setText("You chose to follow the figure...");
+    private void handleButtonClick(ActionEvent actionEvent) {
+        mediaPlayer.play();
+        String selectedOption = ((Button) actionEvent.getSource()).getText();
+        choices[sceneCounter].handleChoice(selectedOption, this);
+    }
+
+    private static class Choice {
+        private final String text;
+        private final String[] options;
+
+        public Choice(String text, String... options) {
+            this.text = text;
+            this.options = options;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public String[] getOptions() {
+            return options;
+        }
+
+        public void handleChoice(String selectedOption, MainController controller) {
+            switch (controller.sceneCounter) {
+                case 1:
+                    if (selectedOption.equals("No")) {
+                        controller.sceneCounter = 7;
+                    } else {
+                        controller.sceneCounter = 2;
+                    }
+                    break;
+                case 2:
+                    if (selectedOption.equals("No")) {
+                        controller.sceneCounter = 11;
+                    } else {
+                        controller.sceneCounter = 3;
+                    }
+                    break;
+                case 3:
+                    if (selectedOption.equals("Danger")) {
+                        controller.sceneCounter = 4;
+                    } else if (selectedOption.equals("Safety")) {
+                        controller.sceneCounter = 6;
+                    }
+                    break;
+                case 7:
+                    controller.sceneCounter = 0;
+                    break;
+                case 8:
+                    if (selectedOption.equals("Explore another path")) {
+                        controller.sceneCounter = 10;
+                    } else if (selectedOption.equals("Stay in place")) {
+                        controller.sceneCounter = 7;
+                    }
+                    break;
+                // ... (Add more cases for other scenes if needed)
+                default:
+                    controller.sceneCounter++;
+                    break;
+            }
+
+            if (controller.sceneCounter < controller.choices.length) {
+                controller.welcomeLabel.setText(controller.choices[controller.sceneCounter].getText());
+                controller.updateButtons();
             } else {
-                welcomeLabel.setText("You chose not to follow the figure...");
-            }
-        } else {
-            // Handle other scenes
-            welcomeLabel.setText(scenes[sceneCounter]);
-        }
-
-        mediaPlayer.play(); // Play the scene transition sound
-
-        if (sceneCounter < scenes.length - 1) {
-            sceneCounter++;
-            updateButtons();
-        } else {
-            welcomeLabel.setText("You've reached the end of the game.");
-            // Disable the buttons to prevent further clicks
-            for (Button button : buttons) {
-                button.setDisable(true);
+                controller.welcomeLabel.setText("You've reached the end of the game.");
+                for (Button button : controller.buttons) {
+                    button.setDisable(true);
+                }
             }
         }
+
+
+
     }
 }
